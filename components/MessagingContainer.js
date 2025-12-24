@@ -31,7 +31,7 @@ export default class MessagingContainer extends React.Component {
 
     // Android geri tuşu listener'ı ekle
     if (Platform.OS === 'android') {
-      BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+      this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
   }
 
@@ -44,8 +44,8 @@ export default class MessagingContainer extends React.Component {
     });
 
     // Android geri tuşu listener'ını kaldır
-    if (Platform.OS === 'android') {
-      BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    if (Platform.OS === 'android' && this.backHandler) {
+      this.backHandler.remove();
     }
   }
 

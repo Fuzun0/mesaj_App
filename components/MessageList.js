@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { createTextMessage, createImageMessage, createLocationMessage } from '../utils/MessageUtils';
 
 export default class MessageList extends React.Component {
@@ -32,7 +32,7 @@ export default class MessageList extends React.Component {
               longitudeDelta: coordinate.longitudeDelta || 0.0421,
             }}
           >
-            <MapView.Marker coordinate={coordinate} />
+            <Marker coordinate={coordinate} />
           </MapView>
         );
 

@@ -10,6 +10,7 @@ import {
   Text,
 } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
+import Constants from 'expo-constants';
 
 const { width } = Dimensions.get('window');
 const GRID_COLUMNS = 4;
@@ -21,6 +22,7 @@ export default class ImageGrid extends React.Component {
     images: [],
     loading: true,
     hasPermission: false,
+    isExpoGo: false,
   };
 
   async componentDidMount() {
@@ -29,7 +31,18 @@ export default class ImageGrid extends React.Component {
 
   getPhotos = async () => {
     try {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
+      // Expo Go kontrolü
+      const isExpoGo = Constants.appOwnership === 'expo';
+      if (isExpoGo) {
+        this.setState({ 
+          loading: false, 
+          hasPermission: false,
+          isExpoGo: true 
+        });
+        return;
+      }
+
+      const { status } = await MediaLibrary.requestPermissionsAsync(false);
       
       if (status !== 'granted') {
         this.setState({ loading: false, hasPermission: false });
@@ -78,12 +91,25 @@ export default class ImageGrid extends React.Component {
   };
 
   render() {
-    const { images, loading, hasPermission } = this.state;
+    const { images, loading, hasPermission, isExpoGo } = this.state;
 
     if (loading) {
       return (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007AFF" />
+        </View>
+      );
+    }
+
+    if (isExpoGo) {
+      return (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.permissionText}>
+            📱 Expo Go'da galeri görüntüleme desteklenmiyor
+          </Text>
+          <Text style={[styles.permissionText, styles.smallText]}>
+            Kamera ve Fotoğraf Kitaplığı butonlarını kullanabilirsiniz
+          </Text>
         </View>
       );
     }
@@ -138,5 +164,10 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     paddingHorizontal: 20,
+  },
+  smallText: {
+    fontSize: 14,
+    marginTop: 10,
+    color: '#999',
   },
 });
